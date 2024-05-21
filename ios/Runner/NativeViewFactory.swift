@@ -8,6 +8,8 @@ import Foundation
 import GoogleInteractiveMediaAds
 import GSPlayer
 import Flutter
+import UIKit
+
 
 class NativeViewFactory : NSObject, FlutterPlatformViewFactory {
     private var messenger: FlutterBinaryMessenger
@@ -103,7 +105,9 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         createNativeView(view: _view)
         startTimer()
        
-        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.playerView.play(for: contentURL)
+        }
        
     }
 
@@ -201,9 +205,7 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
       // Set up our content playhead and contentComplete callback.
         contentPlayhead = IMAAVPlayerContentPlayhead(avPlayer: playerView.player!)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.playerView.play(for: contentURL)
-        }
+        
     }
    
     @objc func touchHappen(_ sender: UITapGestureRecognizer) {
