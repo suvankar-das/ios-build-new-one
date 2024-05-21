@@ -52,6 +52,8 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
    
     var paybackSlider = UISlider()
 
+    var contentUrl2 = ""
+
     var contentPlayhead: IMAAVPlayerContentPlayhead?
     var adsLoader: IMAAdsLoader!
     var adsManager: IMAAdsManager!
@@ -104,9 +106,11 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         setUpAdsLoader()
         createNativeView(view: _view)
         startTimer()
+
+        
        
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.playerView.play(for: contentURL)
+            self.playerView.play(for: contentUrl2)
         }
        
     }
@@ -170,6 +174,8 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         print("ERROR: please use a valid URL for the content URL")
         return
       }
+
+        contentUrl2 = contentURL
        
         let controller = AVPlayerViewController()
         let player = AVPlayer(url: URL(string: kTestAppContentUrl_MP4)!)
