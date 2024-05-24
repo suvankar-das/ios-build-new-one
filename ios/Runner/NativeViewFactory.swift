@@ -110,7 +110,7 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         
        
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.playerView.play(for: kTestAppContentUrl_MP4)
+            self.playerView.play(for:argumentsDictionary["videoURL"] as! String)
         }
        
     }
