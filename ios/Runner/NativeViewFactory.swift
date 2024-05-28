@@ -1,24 +1,20 @@
-//
-//  NativeViewFactory.swift
-//  Runner
-//
-//
-
 import Foundation
 import GoogleInteractiveMediaAds
 import GSPlayer
 import Flutter
 
-class NativeViewFactory : NSObject, FlutterPlatformViewFactory {
+class NativeViewFactory: NSObject, FlutterPlatformViewFactory {
     private var messenger: FlutterBinaryMessenger
 
     init(messenger: FlutterBinaryMessenger) {
         self.messenger = messenger
         super.init()
     }
+
     public func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol {
-          return FlutterStandardMessageCodec.sharedInstance()
+        return FlutterStandardMessageCodec.sharedInstance()
     }
+
     func create(
         withFrame frame: CGRect,
         viewIdentifier viewId: Int64,
@@ -32,22 +28,19 @@ class NativeViewFactory : NSObject, FlutterPlatformViewFactory {
     }
 }
 
-public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMAAdsLoaderDelegate, IMAAdsManagerDelegate {
-   
-    deinit{
+public class NativeView: NSObject, FlutterPlatformView, fullScreeenDelegate, IMAAdsLoaderDelegate, IMAAdsManagerDelegate {
+
+    deinit {
         stopTimer()
         playerView.pause()
     }
-   
-    private var _view: UIView
-    var kTestAppContentUrl_MP4 = " "
 
+    private var _view: UIView
+    var kTestAppContentUrl_MP4 = ""
 
     var settings = UIButton()
-   
-    var playerView =  VideoPlayerView()
-    var controlView =  GSPlayerControlUIView()
-   
+    var playerView = VideoPlayerView()
+    var controlView = GSPlayerControlUIView()
     var paybackSlider = UISlider()
 
     var contentPlayhead: IMAAVPlayerContentPlayhead?
@@ -56,13 +49,13 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let controller = UIApplication.topViewController()
 
-    var item : AVPlayerItem!
-
-    var message : FlutterBinaryMessenger!
+    var item: AVPlayerItem!
+    var message: FlutterBinaryMessenger!
     weak var timer: Timer?
-   
+
     static let kTestAppAdTagUrl =
-      "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpostpod&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator="
+        "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpostpod&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator="
+
     init(
         frame: CGRect,
         viewIdentifier viewId: Int64,
@@ -77,10 +70,9 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
             print("test URL:", kTestAppContentUrl_MP4)
         }
         message = messenger
-       
-        let flutterChannel = FlutterMethodChannel(name: "bms_video_player",
-                                             binaryMessenger: messenger!)
-         
+
+        let flutterChannel = FlutterMethodChannel(name: "bms_video_player", binaryMessenger: messenger!)
+
         flutterChannel.setMethodCallHandler({ (call: FlutterMethodCall, result: FlutterResult) -> Void in
             switch call.method {
             case "pauseVideo":
@@ -90,261 +82,125 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
                 }
                 result(nil)
             case "autoplay":
-                self.playerView.resume()
+                self.autoplayVideo()
                 result(nil)
             default:
                 result(FlutterMethodNotImplemented)
             }
         })
-         
-   
-        // iOS views can be created here
 
         setUpContentPlayer(view: _view)
         setUpAdsLoader()
         createNativeView(view: _view)
         startTimer()
-        controlView.onClicked_FullScreen(self)
-       
-    }
-   
-    func startTimer() {
-        timer?.invalidate()   // just in case you had existing `Timer`, `invalidate` it before we lose our reference to it
-        timer = Timer.scheduledTimer(withTimeInterval: 4, repeats: true) { [weak self] _ in
-            self?.controlView.isHidden = true
+        controlView.onClicked_FullScreen = { [weak self] in
+            guard let self = self else { return }
+            self.enterFullScreen()
         }
     }
 
-    func stopTimer() {
-        timer?.invalidate()
-        self.playerView.pause()
-    }
-
-    // if appropriate, make sure to stop your timer in `deinit`
-
-   
-   
-    func fullScreenTap() {
-            print("fullScreen tapped!!")
-        let flutterChannel = FlutterMethodChannel(name: "bms_video_player",
-                                             binaryMessenger: message!)
-        flutterChannel.invokeMethod("fullScreen",arguments: 0)
-       
-        playerView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.height, height:UIScreen.main.bounds.size.width )
-        controlView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.height, height: UIScreen.main.bounds.size.width)
-       
-
-        }
-   
-    func normalScreenTap() {
-            print("normalScreen tapped!!")
-        let flutterChannel = FlutterMethodChannel(name: "bms_video_player",
-                                             binaryMessenger: message!)
-        flutterChannel.invokeMethod("normalScreen",arguments: 0)
-       
-        playerView.frame = CGRect(x: 0, y: 0, width:UIScreen.main.bounds.size.height, height: 400)
-        controlView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.height, height: 400)
-       
-        }
-   
-    func backButtonTap() {
-        print("backButton tapped!!")
-        // Handle back button action
-        controlView.onClicked_FullScreen(self)
-        let flutterChannel = FlutterMethodChannel(name: "bms_video_player", binaryMessenger: message!)
-        flutterChannel.invokeMethod("onBackButtonClicked", arguments: nil)
-    }
-   
-   
-    func setUpContentPlayer(view _view: UIView) {
-      // Load AVPlayer with path to our content.
-        print("test URL1:", kTestAppContentUrl_MP4)
-   
-     
-      guard let contentURL = URL(string: kTestAppContentUrl_MP4) else {
-        print("ERROR: please use a valid URL for the content URL")
-        return
-      }
-       
-        let controller = AVPlayerViewController()
-        let player = AVPlayer(url: URL(string: kTestAppContentUrl_MP4)!)
-
-        controller.player = player
-       
-        playerView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 400)
-        controlView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 400)
-
-        playerView.contentMode = .scaleAspectFill
-        playerView.play(for: contentURL)
-   
-   
-        controlView.delegate = self
-        controlView.populate(with: playerView)
-       
-
-
-      // Size, position, and display the AVPlayer.
-        _view.addSubview(playerView)
-        _view.addSubview(controlView)
-       
-        playerView.pause(reason: .userInteraction)
-        controlView.isHidden = true
-        controlView.bringSubviewToFront(_view)
-       
-       
-        let tap = UITapGestureRecognizer(target: self, action: #selector(self.touchHappen(_:)))
-        playerView.addGestureRecognizer(tap)
-        playerView.isUserInteractionEnabled = true
-        //_view.layer.addSublayer(playerLayer!)
-
-      // Set up our content playhead and contentComplete callback.
-        contentPlayhead = IMAAVPlayerContentPlayhead(avPlayer: playerView.player!)
-    }
-   
-    @objc func touchHappen(_ sender: UITapGestureRecognizer) {
-        print("touchHappen")
-        self.controlView.isHidden = false
-    }
-   
-   
-
-    @objc func applicationDidEnterBackground(_ notification: NSNotification) {
-        playerView.pause(reason: .userInteraction)
-    }
-   
-    @objc func contentDidFinishPlaying(_ notification: Notification) {
-      // Make sure we don't call contentComplete as a result of an ad completing.
-     // if (notification.object as! AVPlayerItem) == playerView.playerLayer.player?.currentItem {
-    //    adsLoader.contentComplete()
-     // }
-    }
-
-    func setUpAdsLoader() {
-      adsLoader = IMAAdsLoader(settings: nil)
-      adsLoader.delegate = self
-    }
-
-    func requestAds(view _view: UIView) {
-      // Create ad display container for ad rendering.
-      let adDisplayContainer = IMAAdDisplayContainer(
-        adContainer: _view, viewController: controller, companionSlots: nil)
-      // Create an ad request with our ad tag, display container, and optional user context.
-      let request = IMAAdsRequest(
-        adTagUrl: NativeView.kTestAppAdTagUrl,
-        adDisplayContainer: adDisplayContainer,
-        contentPlayhead: contentPlayhead,
-        userContext: controlView)
-
-      adsLoader.requestAds(with: request)
-       
-    }
     public func view() -> UIView {
         return _view
     }
 
-    func createNativeView(view _view: UIView){
-        _view.backgroundColor = UIColor.black
-       
-        settings.addTarget(self, action: #selector(touchedSet), for: .touchUpInside)
-                settings.setImage(UIImage(named: "play_48px"), for: .normal)
-                settings.frame = CGRect(x: 200, y:200 , width: 50, height: 50)
-        _view.addSubview(settings)
-        _view.bringSubviewToFront(controlView)
-        _view.bringSubviewToFront(settings)
-
-
+    private func setUpContentPlayer(view: UIView) {
+        let url = URL(string: kTestAppContentUrl_MP4)!
+        let item = AVPlayerItem(url: url)
+        playerView.replaceCurrentItem(with: item)
+        contentPlayhead = IMAAVPlayerContentPlayhead(avPlayer: playerView.player)
     }
 
-   
-    @objc func touchedSet(sender: UIButton!) {
-           print("You tapped the button")
-       
-       
+    private func setUpAdsLoader() {
+        let settings = IMASettings()
+        settings.language = Locale.preferredLanguages.first
+        adsLoader = IMAAdsLoader(settings: settings)
+        adsLoader.delegate = self
+    }
+
+    private func createNativeView(view: UIView) {
+        playerView.frame = view.bounds
+        playerView.contentMode = .scaleAspectFit
+        playerView.playbackDelegate = self
+        view.addSubview(playerView)
+    }
+
+    private func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            self?.updatePlaybackProgress()
+        }
+    }
+
+    private func stopTimer() {
+        timer?.invalidate()
+    }
+
+    private func updatePlaybackProgress() {
+        // Update playback progress logic
+    }
+
+    private func enterFullScreen() {
+        // Fullscreen logic
+    }
+
+    private func autoplayVideo() {
         requestAds(view: _view)
-           settings.isHidden = true
-       }
-   
-    // MARK: - IMAAdsLoaderDelegate
+        playerView.resume()
+        controlView.isHidden = false
+    }
+
+    func requestAds(view _view: UIView) {
+        let adDisplayContainer = IMAAdDisplayContainer(adContainer: _view, viewController: controller, companionSlots: nil)
+        let request = IMAAdsRequest(
+            adTagUrl: NativeView.kTestAppAdTagUrl,
+            adDisplayContainer: adDisplayContainer,
+            contentPlayhead: contentPlayhead,
+            userContext: controlView)
+
+        adsLoader.requestAds(with: request)
+    }
 
     public func adsLoader(_ loader: IMAAdsLoader, adsLoadedWith adsLoadedData: IMAAdsLoadedData) {
-      // Grab the instance of the IMAAdsManager and set ourselves as the delegate.
-      adsManager = adsLoadedData.adsManager
-      adsManager.delegate = self
+        adsManager = adsLoadedData.adsManager
+        adsManager.delegate = self
 
-      // Create ads rendering settings and tell the SDK to use the in-app browser.
-      let adsRenderingSettings = IMAAdsRenderingSettings()
-      adsRenderingSettings.linkOpenerPresentingController = controller
+        let adsRenderingSettings = IMAAdsRenderingSettings()
+        adsRenderingSettings.linkOpenerPresentingController = controller
 
-      // Initialize the ads manager.
-      adsManager.initialize(with: adsRenderingSettings)
-
-       //touchedSet(sender: UIButton())
-       controlView.onClicked_FullScreen(self)
+        adsManager.initialize(with: adsRenderingSettings)
     }
 
     public func adsLoader(_ loader: IMAAdsLoader, failedWith adErrorData: IMAAdLoadingErrorData) {
         playerView.resume()
         controlView.isHidden = false
-
     }
 
-    // MARK: - IMAAdsManagerDelegate
-
     public func adsManager(_ adsManager: IMAAdsManager, didReceive event: IMAAdEvent) {
-      if event.type == IMAAdEventType.LOADED {
-        // When the SDK notifies us that ads have been loaded, play them.
-        adsManager.start()
-      }
-        if event.type == IMAAdEventType.RESUME {
-       
-            settings.addTarget(self, action: #selector(touchedSet), for: .touchUpInside)
-                    settings.setImage(UIImage(named: "play_48px"), for: .normal)
-                    settings.frame = CGRect(x: 200, y:200 , width: 50, height: 50)
-            _view.addSubview(settings)
-            }
-           
-            if event.type == IMAAdEventType.PAUSE {
-             
-                if(adsManager.adPlaybackInfo.isPlaying) {
-                    adsManager.pause()
-                }
-                settings.addTarget(self, action: #selector(touchedSet), for: .touchUpInside)
-                        settings.setImage(UIImage(named: "play_48px"), for: .normal)
-                        settings.frame = CGRect(x:200, y:200 , width: 50, height: 50)
-                _view.addSubview(settings)
-            }
-           
-            if event.type == IMAAdEventType.TAPPED {
-                // You can also add allow the user to tap anywhere on the Ad to resume play
-                if(!adsManager.adPlaybackInfo.isPlaying) {
-                    adsManager.resume()
-                }
-            }
-               
+        if event.type == IMAAdEventType.LOADED {
+            adsManager.start()
+        }
+        if event.type == IMAAdEventType.RESUME || event.type == IMAAdEventType.TAPPED {
+            settings.isHidden = true
+        }
+        if event.type == IMAAdEventType.PAUSE {
+            settings.isHidden = false
+        }
     }
 
     public func adsManager(_ adsManager: IMAAdsManager, didReceive error: IMAAdError) {
-      // Something went wrong with the ads manager after ads were loaded. Log the error and play the
-      // content.
-      print("AdsManager error: \(error.message ?? "nil")")
+        print("AdsManager error: \(error.message ?? "nil")")
         playerView.resume()
         controlView.isHidden = false
-
     }
 
     public func adsManagerDidRequestContentPause(_ adsManager: IMAAdsManager) {
-      // The SDK is going to play ads, so pause the content.
         playerView.pause(reason: .userInteraction)
         controlView.isHidden = true
-
     }
 
     public func adsManagerDidRequestContentResume(_ adsManager: IMAAdsManager) {
-      // The SDK is done playing ads (at least for now), so resume the content.
-        print("AdsManager resume: \("nil")")
+        print("AdsManager resume: \(String(describing: error.message))")
         playerView.resume()
         controlView.isHidden = false
-
     }
 }
 
@@ -364,5 +220,3 @@ extension UIApplication {
         return controller
     }
 }
-
-
