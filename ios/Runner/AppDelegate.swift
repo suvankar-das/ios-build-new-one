@@ -4,7 +4,7 @@ import Flutter
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
     
-    var myOrientation: UIInterfaceOrientationMask = .portrait
+    var myOrientation: UIInterfaceOrientationMask = .landscape
     
 
   override func application(

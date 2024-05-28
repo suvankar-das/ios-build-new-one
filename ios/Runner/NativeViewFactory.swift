@@ -61,7 +61,7 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
     var message : FlutterBinaryMessenger!
     weak var timer: Timer?
    
-    static let kTestAppAdTagUrl =
+    static let kTestAppAdTagUrl =""
       "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpostpod&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator="
     init(
         frame: CGRect,
@@ -197,6 +197,7 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
 
       // Set up our content playhead and contentComplete callback.
         contentPlayhead = IMAAVPlayerContentPlayhead(avPlayer: playerView.player!)
+        playerView.resume()
     }
    
     @objc func touchHappen(_ sender: UITapGestureRecognizer) {
@@ -276,7 +277,7 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
       // Initialize the ads manager.
       adsManager.initialize(with: adsRenderingSettings)
 
-       touchedSet(sender: UIButton())
+       //touchedSet(sender: UIButton())
        controlView.onClicked_FullScreen(self)
     }
 
