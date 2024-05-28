@@ -21,7 +21,7 @@ class NativeViewFactory : NSObject, FlutterPlatformViewFactory {
     public func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol {
           return FlutterStandardMessageCodec.sharedInstance()
     }
-    func create(
+    override func create(
         withFrame frame: CGRect,
         viewIdentifier viewId: Int64,
         arguments args: Any?
@@ -110,7 +110,7 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         
        
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.playerView.play(for:argumentsDictionary["videoURL"] as! String)
+            self.playerView.play(for: argumentsDictionary["videoURL"] as! String)
         }
        
     }
