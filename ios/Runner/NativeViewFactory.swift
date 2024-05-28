@@ -8,8 +8,6 @@ import Foundation
 import GoogleInteractiveMediaAds
 import GSPlayer
 import Flutter
-import UIKit
-
 
 class NativeViewFactory : NSObject, FlutterPlatformViewFactory {
     private var messenger: FlutterBinaryMessenger
@@ -21,7 +19,7 @@ class NativeViewFactory : NSObject, FlutterPlatformViewFactory {
     public func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol {
           return FlutterStandardMessageCodec.sharedInstance()
     }
-    override func create(
+    func create(
         withFrame frame: CGRect,
         viewIdentifier viewId: Int64,
         arguments args: Any?
@@ -51,8 +49,6 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
     var controlView =  GSPlayerControlUIView()
    
     var paybackSlider = UISlider()
-
-    var contentUrl2 = ""
 
     var contentPlayhead: IMAAVPlayerContentPlayhead?
     var adsLoader: IMAAdsLoader!
@@ -106,16 +102,9 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         setUpAdsLoader()
         createNativeView(view: _view)
         startTimer()
-
-        
        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.playerView.play(for: argumentsDictionary["videoURL"] as! String)
-        }
        
     }
-
-    
    
     func startTimer() {
         timer?.invalidate()   // just in case you had existing `Timer`, `invalidate` it before we lose our reference to it
@@ -174,8 +163,6 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         print("ERROR: please use a valid URL for the content URL")
         return
       }
-
-        contentUrl2 = contentURL
        
         let controller = AVPlayerViewController()
         let player = AVPlayer(url: URL(string: kTestAppContentUrl_MP4)!)
@@ -186,7 +173,7 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         controlView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 400)
 
         playerView.contentMode = .scaleAspectFill
-        //playerView.play(for: contentURL)
+        playerView.play(for: contentURL)
    
    
         controlView.delegate = self
@@ -198,7 +185,7 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         _view.addSubview(playerView)
         _view.addSubview(controlView)
        
-        //playerView.pause(reason: .userInteraction)
+        playerView.pause(reason: .userInteraction)
         controlView.isHidden = true
         controlView.bringSubviewToFront(_view)
        
@@ -210,8 +197,6 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
 
       // Set up our content playhead and contentComplete callback.
         contentPlayhead = IMAAVPlayerContentPlayhead(avPlayer: playerView.player!)
-
-        
     }
    
     @objc func touchHappen(_ sender: UITapGestureRecognizer) {
@@ -291,8 +276,8 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
       // Initialize the ads manager.
       adsManager.initialize(with: adsRenderingSettings)
 
-       //touchedSet(sender: UIButton())
-       //controlView.onClicked_FullScreen(self)
+       touchedSet(sender: UIButton())
+       controlView.onClicked_FullScreen(self)
     }
 
     public func adsLoader(_ loader: IMAAdsLoader, failedWith adErrorData: IMAAdLoadingErrorData) {
