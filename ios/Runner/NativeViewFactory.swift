@@ -1,3 +1,9 @@
+//
+//  NativeViewFactory.swift
+//  Runner
+//
+//
+
 import Foundation
 import GoogleInteractiveMediaAds
 import GSPlayer
@@ -55,8 +61,8 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
     var message : FlutterBinaryMessenger!
     weak var timer: Timer?
    
-    static let kTestAppAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator="
-      
+    static let kTestAppAdTagUrl =
+      "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpostpod&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator="
     init(
         frame: CGRect,
         viewIdentifier viewId: Int64,
@@ -79,15 +85,17 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
             switch call.method {
             case "pauseVideo":
                 self.playerView.pause(reason: .userInteraction)
-                if(self.adsManager.adPlaybackInfo.isPlaying) {
+                if self.adsManager.adPlaybackInfo.isPlaying {
                     self.adsManager.pause()
                 }
-                return
-
+                result(nil)
+            case "autoplay":
+                self.playerView.resume()
+                result(nil)
             default:
                 result(FlutterMethodNotImplemented)
             }
-            })
+        })
          
    
         // iOS views can be created here
@@ -96,8 +104,8 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         setUpAdsLoader()
         createNativeView(view: _view)
         startTimer()
+        controlView.onClicked_FullScreen(self)
        
-       controlView.onClicked_FullScreen(self)
     }
    
     func startTimer() {
@@ -149,48 +157,49 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
    
    
     func setUpContentPlayer(view _view: UIView) {
-    // Load AVPlayer with path to our content.
-    print("test URL1:", kTestAppContentUrl_MP4)
-
-    guard let contentURL = URL(string: kTestAppContentUrl_MP4) else {
+      // Load AVPlayer with path to our content.
+        print("test URL1:", kTestAppContentUrl_MP4)
+   
+     
+      guard let contentURL = URL(string: kTestAppContentUrl_MP4) else {
         print("ERROR: please use a valid URL for the content URL")
         return
+      }
+       
+        let controller = AVPlayerViewController()
+        let player = AVPlayer(url: URL(string: kTestAppContentUrl_MP4)!)
+
+        controller.player = player
+       
+        playerView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 400)
+        controlView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 400)
+
+        playerView.contentMode = .scaleAspectFill
+        playerView.play(for: contentURL)
+   
+   
+        controlView.delegate = self
+        controlView.populate(with: playerView)
+       
+
+
+      // Size, position, and display the AVPlayer.
+        _view.addSubview(playerView)
+        _view.addSubview(controlView)
+       
+        playerView.pause(reason: .userInteraction)
+        controlView.isHidden = true
+        controlView.bringSubviewToFront(_view)
+       
+       
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.touchHappen(_:)))
+        playerView.addGestureRecognizer(tap)
+        playerView.isUserInteractionEnabled = true
+        //_view.layer.addSublayer(playerLayer!)
+
+      // Set up our content playhead and contentComplete callback.
+        contentPlayhead = IMAAVPlayerContentPlayhead(avPlayer: playerView.player!)
     }
-
-    let controller = AVPlayerViewController()
-    let player = AVPlayer(url: contentURL)
-
-    controller.player = player
-
-    playerView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 400)
-    controlView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 400)
-
-    playerView.contentMode = .scaleAspectFill
-    playerView.play(for: contentURL)
-
-    controlView.delegate = self
-    controlView.populate(with: playerView)
-
-    // Size, position, and display the AVPlayer.
-    _view.addSubview(playerView)
-    _view.addSubview(controlView)
-
-    playerView.pause(reason: .userInteraction) // Initially pause
-    controlView.isHidden = true
-    controlView.bringSubviewToFront(_view)
-
-    let tap = UITapGestureRecognizer(target: self, action: #selector(self.touchHappen(_:)))
-    playerView.addGestureRecognizer(tap)
-    playerView.isUserInteractionEnabled = true
-
-    // Set up our content playhead and contentComplete callback.
-    contentPlayhead = IMAAVPlayerContentPlayhead(avPlayer: playerView.player!)
-
-    // Automatically start playback
-    playerView.resume()  // Start playing the video automatically
-    requestAds(view: _view)
-}
-
    
     @objc func touchHappen(_ sender: UITapGestureRecognizer) {
         print("touchHappen")
@@ -235,13 +244,14 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
 
     func createNativeView(view _view: UIView){
         _view.backgroundColor = UIColor.black
+       
+        settings.addTarget(self, action: #selector(touchedSet), for: .touchUpInside)
+                settings.setImage(UIImage(named: "play_48px"), for: .normal)
+                settings.frame = CGRect(x: 200, y:200 , width: 50, height: 50)
+        _view.addSubview(settings)
+        _view.bringSubviewToFront(controlView)
+        _view.bringSubviewToFront(settings)
 
-    // Hide the play button if it exists
-    settings.isHidden = true
-    // or you can remove the button from the view hierarchy if it's added before
-    // settings.removeFromSuperview()
-
-    _view.bringSubviewToFront(controlView)
 
     }
 
@@ -268,7 +278,8 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
       // Initialize the ads manager.
       adsManager.initialize(with: adsRenderingSettings)
 
-       
+       //touchedSet(sender: UIButton())
+       controlView.onClicked_FullScreen(self)
     }
 
     public func adsLoader(_ loader: IMAAdsLoader, failedWith adErrorData: IMAAdLoadingErrorData) {
