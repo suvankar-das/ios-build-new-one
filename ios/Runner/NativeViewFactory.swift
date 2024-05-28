@@ -97,7 +97,7 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         createNativeView(view: _view)
         startTimer()
        
-       
+       controlView.onClicked_FullScreen(self)
     }
    
     func startTimer() {
@@ -271,8 +271,7 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
       // Initialize the ads manager.
       adsManager.initialize(with: adsRenderingSettings)
 
-       touchedSet(sender: UIButton())
-       controlView.onClicked_FullScreen(self)
+       
     }
 
     public func adsLoader(_ loader: IMAAdsLoader, failedWith adErrorData: IMAAdLoadingErrorData) {

@@ -65,8 +65,6 @@ class GSPlayerControlUIView: UIView {
         self.isUserInteractionEnabled = false
         
         self.addSubview(view)
-        // Set the image for the back button
-        backButton.setImage(UIImage(named: "backbutton"), for: .normal)
     }
 }
 
