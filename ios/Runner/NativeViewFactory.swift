@@ -102,8 +102,8 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         setUpAdsLoader()
         createNativeView(view: _view)
         startTimer()
-}
-
+       
+       
     }
    
     func startTimer() {
@@ -173,7 +173,7 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         controlView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 400)
 
         playerView.contentMode = .scaleAspectFill
-        //playerView.play(for: contentURL)
+        playerView.play(for: contentURL)
    
    
         controlView.delegate = self
@@ -197,9 +197,6 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
 
       // Set up our content playhead and contentComplete callback.
         contentPlayhead = IMAAVPlayerContentPlayhead(avPlayer: playerView.player!)
-        DispatchQueue.main.async {
-            self.playerView.play(for: contentURL)
-        }
     }
    
     @objc func touchHappen(_ sender: UITapGestureRecognizer) {
@@ -279,8 +276,8 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
       // Initialize the ads manager.
       adsManager.initialize(with: adsRenderingSettings)
 
-       //touchedSet(sender: UIButton())
-       //controlView.onClicked_FullScreen(self)
+       touchedSet(sender: UIButton())
+       controlView.onClicked_FullScreen(self)
     }
 
     public func adsLoader(_ loader: IMAAdsLoader, failedWith adErrorData: IMAAdLoadingErrorData) {
