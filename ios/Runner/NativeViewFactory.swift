@@ -104,18 +104,19 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
         startTimer()
        
        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
-        // Make sure the object is still around after 2 minutes
-        guard let self = self else { return }
-        
-        // Make sure the URL is valid
-        guard let contentURL = URL(string: self.kTestAppContentUrl_MP4) else {
-            print("ERROR: please use a valid URL for the content URL")
-            return
-        }
-
-        // Start playing the video
-        self.playerView.play(for: contentURL)
+    // Make sure the object is still around after 2 minutes
+    guard let self = self else { return }
+    
+    // Make sure the URL is valid
+    guard let contentURL = URL(string: self.kTestAppContentUrl_MP4) else {
+        print("ERROR: please use a valid URL for the content URL")
+        return
     }
+
+    // Start playing the video
+    self.playerView.play(for: contentURL)
+}
+
     }
    
     func startTimer() {
