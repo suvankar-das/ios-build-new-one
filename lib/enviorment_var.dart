@@ -8,5 +8,8 @@ class EnvironmentVars {
   static const baseUrl = 'https://api.themoviedb.org/3';
   // static const apiUrl = 'http://office.pensivedata.in:3016';
   static const apiUrl = 'https://indimuse.in';
-  static const bucketUrl = 'https://d33rgy2oqmippl.cloudfront.net';
+  // static const kanchaLankaUrl = 'https://newsite.kancchalannka.com/api/v1';
+  static const kanchaLankaUrl = 'https://indimuse.in/api/v1';
+  static const bucketUrl = 'https://d1f3hicjs3sfx1.cloudfront.net';
+  static const kancchaLannkaSiteUrl = 'https://newsite.kancchalannka.com';
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ott_code_frontend/common/color_extension.dart';
 import 'package:ott_code_frontend/enviorment_var.dart';
+import 'package:ott_code_frontend/models/Movie.dart';
 import 'package:ott_code_frontend/models/Song.dart';
 import 'package:ott_code_frontend/view/home/action_buttons.dart';
 import 'package:ott_code_frontend/view/home/movie_player.dart';
@@ -12,7 +14,7 @@ class CategoryDetailsView extends StatefulWidget {
   const CategoryDetailsView({Key? key, required this.categoryContent})
       : super(key: key);
 
-  final Song categoryContent;
+  final Movie? categoryContent;
 
   @override
   _CategoryDetailsViewState createState() => _CategoryDetailsViewState();
@@ -26,18 +28,18 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
 
-    String description = widget.categoryContent.description;
-    String displayDescription = _isExpanded || description.length <= 200
-        ? description
-        : description.substring(0, 200) + '...';
+    String? description = widget.categoryContent?.description;
+    String displayDescription = (_isExpanded || description!.length <= 200)
+        ? description!
+        : description!.substring(0, 200) + '...';
 
     return Scaffold(
       backgroundColor: ApplicationColor.bgColor,
       body: _isPlaying
           ? MoviePlayer(
               videoUrl:
-                  '${EnvironmentVars.bucketUrl}/${widget.categoryContent.encodedFilePath}',
-              videoText: widget.categoryContent.title,
+                  '${EnvironmentVars.bucketUrl}/${widget.categoryContent?.media?.encodedFilePath}',
+              videoText: widget.categoryContent!.title!,
             )
           : SingleChildScrollView(
               child: Stack(
@@ -54,7 +56,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                             height: media.width * 0.8,
                             child: ClipRect(
                               child: Image.network(
-                                '${EnvironmentVars.bucketUrl}/${widget.categoryContent.imageUrl_poster}',
+                                '${EnvironmentVars.bucketUrl}/${widget.categoryContent?.images?.img9_16}',
                                 width: media.width,
                                 height: media.width,
                                 fit: BoxFit.cover,
@@ -95,7 +97,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.categoryContent.title,
+                              widget.categoryContent!.title ?? '',
                               style: TextStyle(
                                 color: ApplicationColor.text,
                                 fontSize: 19,
@@ -222,7 +224,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
   //     );
   //   }
   // }
-   Future<void> userAccountCheck() async {
+  Future<void> userAccountCheck() async {
     _isPlaying = true;
   }
 }

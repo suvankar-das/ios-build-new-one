@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ott_code_frontend/common/color_extension.dart';
 import 'package:ott_code_frontend/enviorment_var.dart';
 import 'package:ott_code_frontend/models/Categories.dart';
+import 'package:ott_code_frontend/models/Settings.dart';
 import 'package:ott_code_frontend/view/home/CategoryDetailsView.dart';
 
 class CategorySlider extends StatelessWidget {
@@ -13,7 +14,7 @@ class CategorySlider extends StatelessWidget {
     required this.index,
   }) : super(key: key);
 
-  final Categories category;
+  final Settings category;
   final Size media;
   final int index;
 
@@ -36,7 +37,7 @@ class CategorySlider extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 10.0), // Add top padding
               child: Text(
-                category.title,
+                category.title ?? 'Default Title',
                 style: TextStyle(
                   fontFamily: "Gotham",
                   fontWeight: FontWeight.w700,
@@ -60,15 +61,21 @@ class CategorySlider extends StatelessWidget {
                     : marginBetweenSliders, // Conditionally add top margin
               ),
               child: CarouselSlider.builder(
-                itemCount: category.songs.length,
+                itemCount: category.movies?.length,
                 itemBuilder: (context, index, realIndex) {
+                  String? permalink = category.movies?[index].permalink;
+                  String lastElement = '';
+                  if (permalink != null) {
+                    List<String> elements = permalink.split('/');
+                    lastElement = elements.isNotEmpty ? elements.last : '';
+                  }
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => CategoryDetailsView(
-                            categoryContent: category.songs[index],
+                            categoryContent: category.movies?[index],
                           ),
                         ),
                       );
@@ -76,7 +83,7 @@ class CategorySlider extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        '${EnvironmentVars.bucketUrl}/${category.songs[index].imageUrl_poster}',
+                        '${EnvironmentVars.bucketUrl}/${category.movies?[index].images?.img16_9}',
                         fit: isIndexThree
                             ? BoxFit.cover
                             : aspectRatio > 1

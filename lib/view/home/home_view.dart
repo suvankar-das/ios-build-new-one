@@ -2,6 +2,7 @@ import 'package:fbroadcast/fbroadcast.dart';
 import 'package:flutter/material.dart';
 import 'package:ott_code_frontend/api/api.dart';
 import 'package:ott_code_frontend/models/Categories.dart';
+import 'package:ott_code_frontend/models/Settings.dart';
 import 'package:ott_code_frontend/view/home/Category_slider.dart';
 import 'package:ott_code_frontend/view/home/WebSeries.dart';
 import 'dart:io' show Platform;
@@ -14,19 +15,13 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  late Future<List<Categories>> categories;
+  late Future<List<Settings>> settings;
   int selectedNavItem = 0;
 
   @override
   void initState() {
     super.initState();
-    categories = Api().getCategories(searchString: '');
-
-    FBroadcast.instance().register("change_mode", (value, callback) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    settings = Api().fetchSettingsAndMovies();
   }
 
   @override
@@ -43,7 +38,7 @@ class _HomeViewState extends State<HomeView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 FutureBuilder(
-                  future: categories,
+                  future: settings,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -52,13 +47,15 @@ class _HomeViewState extends State<HomeView> {
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else {
-                      final categoriesWithSongs = snapshot.data!
-                          .where((category) => category.songs.isNotEmpty)
+                      final settingsWithMovies = snapshot.data!
+                          .where((setting) =>
+                              setting.movies != null &&
+                              setting.movies!.isNotEmpty)
                           .toList();
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          for (int i = 0; i < categoriesWithSongs.length; i++)
+                          for (int i = 0; i < settingsWithMovies.length; i++)
                             Padding(
                               padding: EdgeInsets.only(
                                 top: i == 0
@@ -66,7 +63,7 @@ class _HomeViewState extends State<HomeView> {
                                     : 10.0, // No top padding for index 0
                               ),
                               child: CategorySlider(
-                                category: categoriesWithSongs[i],
+                                category: settingsWithMovies[i],
                                 media: media,
                                 index: i, // Pass the index to CategorySlider
                               ),
@@ -79,36 +76,36 @@ class _HomeViewState extends State<HomeView> {
                 const SizedBox(
                     height:
                         10), // Add some space between the FutureBuilder and the Text widget
-                const Text(
-                  "Web series",
-                  style: TextStyle(
-                    fontFamily: "Gotham",
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    fontSize: 25,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () {
-                    // Navigate to another widget when the image is tapped
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const WebSeries()),
-                    );
-                  },
-                  child: Container(
-                    alignment: Alignment.centerLeft, // Align image to the left
-                    width: 200, // Adjust width as needed
-                    height: 200, // Adjust height as needed
-                    child: Image.asset(
-                      'assets/images/tv_show.png',
-                      fit:
-                          BoxFit.cover, // Ensure the image covers the container
-                    ),
-                  ),
-                ),
+                // const Text(
+                //   "Web series",
+                //   style: TextStyle(
+                //     fontFamily: "Gotham",
+                //     fontWeight: FontWeight.w700,
+                //     color: Colors.white,
+                //     fontSize: 25,
+                //   ),
+                // ),
+                // const SizedBox(height: 10),
+                // GestureDetector(
+                //   onTap: () {
+                //     // Navigate to another widget when the image is tapped
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //           builder: (context) => const WebSeries()),
+                //     );
+                //   },
+                //   child: Container(
+                //     alignment: Alignment.centerLeft, // Align image to the left
+                //     width: 200, // Adjust width as needed
+                //     height: 200, // Adjust height as needed
+                //     child: Image.asset(
+                //       'assets/images/tv_show.png',
+                //       fit:
+                //           BoxFit.cover, // Ensure the image covers the container
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

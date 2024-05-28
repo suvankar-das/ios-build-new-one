@@ -113,7 +113,7 @@ class _SearchViewState extends State<SearchView> {
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               CategoryDetailsView(
-                                            categoryContent: song,
+                                            categoryContent: null,
                                           ),
                                         ),
                                       );
