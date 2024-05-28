@@ -93,10 +93,7 @@ public class NativeView: NSObject, FlutterPlatformView, fullScreeenDelegate, IMA
         setUpAdsLoader()
         createNativeView(view: _view)
         startTimer()
-        controlView.onClicked_FullScreen = { [weak self] in
-            guard let self = self else { return }
-            self.enterFullScreen()
-        }
+        controlView.onClicked_FullScreen(self)
     }
 
     public func view() -> UIView {
@@ -105,9 +102,9 @@ public class NativeView: NSObject, FlutterPlatformView, fullScreeenDelegate, IMA
 
     private func setUpContentPlayer(view: UIView) {
         let url = URL(string: kTestAppContentUrl_MP4)!
-        let item = AVPlayerItem(url: url)
-        playerView.replaceCurrentItem(with: item)
-        contentPlayhead = IMAAVPlayerContentPlayhead(avPlayer: playerView.player)
+        let player = AVPlayer(url: url)
+        playerView.player = player
+        contentPlayhead = IMAAVPlayerContentPlayhead(avPlayer: player)
     }
 
     private func setUpAdsLoader() {
@@ -120,7 +117,6 @@ public class NativeView: NSObject, FlutterPlatformView, fullScreeenDelegate, IMA
     private func createNativeView(view: UIView) {
         playerView.frame = view.bounds
         playerView.contentMode = .scaleAspectFit
-        playerView.playbackDelegate = self
         view.addSubview(playerView)
     }
 
@@ -136,10 +132,6 @@ public class NativeView: NSObject, FlutterPlatformView, fullScreeenDelegate, IMA
 
     private func updatePlaybackProgress() {
         // Update playback progress logic
-    }
-
-    private func enterFullScreen() {
-        // Fullscreen logic
     }
 
     private func autoplayVideo() {
@@ -187,7 +179,7 @@ public class NativeView: NSObject, FlutterPlatformView, fullScreeenDelegate, IMA
     }
 
     public func adsManager(_ adsManager: IMAAdsManager, didReceive error: IMAAdError) {
-        print("AdsManager error: \(error.message ?? "nil")")
+        print("AdsManager error: \(error.message)")
         playerView.resume()
         controlView.isHidden = false
     }
@@ -198,7 +190,6 @@ public class NativeView: NSObject, FlutterPlatformView, fullScreeenDelegate, IMA
     }
 
     public func adsManagerDidRequestContentResume(_ adsManager: IMAAdsManager) {
-        print("AdsManager resume: \(String(describing: error.message))")
         playerView.resume()
         controlView.isHidden = false
     }
