@@ -65,6 +65,7 @@ class GSPlayerControlUIView: UIView {
         self.isUserInteractionEnabled = false
         
         self.addSubview(view)
+        
     }
 }
 
