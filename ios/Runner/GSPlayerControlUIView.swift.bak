@@ -60,7 +60,7 @@ class GSPlayerControlUIView: UIView {
 	override func awakeFromNib() {
         super.awakeFromNib()
         // Set the desired tint color
-        let desiredTintColor = UIColor.white
+        let desiredTintColor = UIColor.white // Change to your desired color
         backButton.tintColor = desiredTintColor
     }
     
