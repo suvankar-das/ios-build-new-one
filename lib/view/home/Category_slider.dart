@@ -22,10 +22,13 @@ class CategorySlider extends StatelessWidget {
   Widget build(BuildContext context) {
     double firstCarouselHeight = 0.3;
     double aspectRatio = media.aspectRatio;
-    bool isIndexThree = index == 3;
+    bool isIndexTwo = index == 1;
 
-    double heightForIndexThree = media.height * 0.3;
-    double marginBetweenSliders = 8.0;
+    double heightForIndexThree = media.height * 0.25;
+    double marginBetweenSliders = 1.0;
+
+    // Increase width for the third slider
+    double widthForIndexThree = media.width * 0.6;
 
     return Container(
       alignment: Alignment.topCenter,
@@ -35,30 +38,28 @@ class CategorySlider extends StatelessWidget {
         children: [
           if (index != 0)
             Padding(
-              padding: const EdgeInsets.only(top: 10.0), // Add top padding
+              padding: const EdgeInsets.only(top: 5.0), // Add top padding
               child: Text(
                 category.title ?? 'Default Title',
                 style: TextStyle(
-                  fontFamily: "Gotham",
-                  fontWeight: FontWeight.w700,
+                  fontFamily: "Roboto",
+                  fontWeight: FontWeight.w500,
                   color: ApplicationColor.text,
-                  fontSize: 25,
+                  fontSize: 16,
                 ),
               ),
             ),
           SizedBox(
             width: media.width,
-            height: isIndexThree
+            height: isIndexTwo
                 ? heightForIndexThree
                 : index == 0
                     ? media.height * firstCarouselHeight
                     : media.width * 0.3,
             child: Container(
               margin: EdgeInsets.only(
-                bottom: marginBetweenSliders,
-                top: index == 0
-                    ? 0.0
-                    : marginBetweenSliders, // Conditionally add top margin
+                bottom: index == 0 ? 0 : marginBetweenSliders,
+                top: index == 0 ? 0.0 : marginBetweenSliders,
               ),
               child: CarouselSlider.builder(
                 itemCount: category.movies?.length,
@@ -84,31 +85,31 @@ class CategorySlider extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
                         '${EnvironmentVars.bucketUrl}/${category.movies?[index].images?.img16_9}',
-                        fit: isIndexThree
+                        fit: isIndexTwo
                             ? BoxFit.cover
                             : aspectRatio > 1
                                 ? BoxFit.fitHeight
                                 : BoxFit.fitWidth,
-                        width: media.width,
-                        height: isIndexThree
+                        width: index == 2 ? widthForIndexThree : media.width,
+                        height: isIndexTwo
                             ? heightForIndexThree
                             : index == 0
                                 ? media.height * firstCarouselHeight
-                                : media.width * 0.4,
+                                : media.width * 0.8,
                         filterQuality: FilterQuality.low,
                       ),
                     ),
                   );
                 },
                 options: CarouselOptions(
-                  height: isIndexThree
+                  height: isIndexTwo
                       ? heightForIndexThree
                       : index == 0
                           ? media.height * firstCarouselHeight
-                          : media.width * 0.4,
+                          : media.width * 0.6,
                   autoPlay: index != 0,
                   initialPage: 0,
-                  viewportFraction: index == 0 ? 1.0 : 0.4,
+                  viewportFraction: index == 2 ? 0.6 : (index == 0 ? 1.0 : 0.4),
                   enlargeCenterPage: true,
                   pageSnapping: true,
                   autoPlayCurve: Curves.fastOutSlowIn,
@@ -122,3 +123,4 @@ class CategorySlider extends StatelessWidget {
     );
   }
 }
+

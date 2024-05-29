@@ -9,7 +9,6 @@ import 'dart:io' show Platform;
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
-
   @override
   State<HomeView> createState() => _HomeViewState();
 }
@@ -17,7 +16,6 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   late Future<List<Settings>> settings;
   int selectedNavItem = 0;
-
   @override
   void initState() {
     super.initState();
@@ -33,7 +31,11 @@ class _HomeViewState extends State<HomeView> {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            padding: EdgeInsets.only(
+              top: selectedNavItem == 0
+                  ? 0
+                  : 10.0, // Remove top padding for the first item
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -60,7 +62,7 @@ class _HomeViewState extends State<HomeView> {
                               padding: EdgeInsets.only(
                                 top: i == 0
                                     ? 0.0
-                                    : 10.0, // No top padding for index 0
+                                    : 4, // No top padding for index 0
                               ),
                               child: CategorySlider(
                                 category: settingsWithMovies[i],
@@ -73,49 +75,14 @@ class _HomeViewState extends State<HomeView> {
                     }
                   },
                 ),
-                const SizedBox(
-                    height:
-                        10), // Add some space between the FutureBuilder and the Text widget
-                // const Text(
-                //   "Web series",
-                //   style: TextStyle(
-                //     fontFamily: "Gotham",
-                //     fontWeight: FontWeight.w700,
-                //     color: Colors.white,
-                //     fontSize: 25,
-                //   ),
-                // ),
-                // const SizedBox(height: 10),
-                // GestureDetector(
-                //   onTap: () {
-                //     // Navigate to another widget when the image is tapped
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //           builder: (context) => const WebSeries()),
-                //     );
-                //   },
-                //   child: Container(
-                //     alignment: Alignment.centerLeft, // Align image to the left
-                //     width: 200, // Adjust width as needed
-                //     height: 200, // Adjust height as needed
-                //     child: Image.asset(
-                //       'assets/images/tv_show.png',
-                //       fit:
-                //           BoxFit.cover, // Ensure the image covers the container
-                //     ),
-                //   ),
-                // ),
+                const SizedBox(height: 10),
               ],
             ),
           ),
-          // Fixed navigation items
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            // child:
-            //     Platform.isIOS ? SafeArea(child: buildNavBar()) : buildNavBar(),
             child: SafeArea(child: buildNavBar()),
           ),
         ],
@@ -145,16 +112,12 @@ class _HomeViewState extends State<HomeView> {
         setState(() {
           selectedNavItem = index;
         });
-        // Handle click event for each navigation item here
         switch (index) {
           case 0:
-            // Handle All click event
             break;
           case 1:
-            // Handle Special click event
             break;
           case 2:
-            // Handle Emotional click event
             break;
           case 3:
             // Handle Traditional click event
@@ -179,3 +142,4 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 }
+
