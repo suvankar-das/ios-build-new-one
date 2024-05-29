@@ -62,7 +62,7 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
     weak var timer: Timer?
    
     static let kTestAppAdTagUrl =
-      "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpostpod&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator="
+      "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpreonly&ciu_szs=300x250%2C728x90&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&correlator="
     init(
         frame: CGRect,
         viewIdentifier viewId: Int64,
@@ -145,13 +145,14 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
        
         }
    
-    func backButtonTap() {
-        print("backButton tapped!!")
-        // Handle back button action
-        controlView.onClicked_FullScreen(self)
-        let flutterChannel = FlutterMethodChannel(name: "bms_video_player", binaryMessenger: message!)
-        flutterChannel.invokeMethod("onBackButtonClicked", arguments: nil)
+  func backButtonTap() {
+    playerView.pause(reason: .userInteraction)
+    if adsManager.adPlaybackInfo.isPlaying {
+        adsManager.pause()
     }
+    let flutterChannel = FlutterMethodChannel(name: "bms_video_player", binaryMessenger: message!)
+    flutterChannel.invokeMethod("onBackButtonClicked", arguments: nil)
+}
    
    
     func setUpContentPlayer(view _view: UIView) {
@@ -169,8 +170,8 @@ public class NativeView : NSObject, FlutterPlatformView,fullScreeenDelegate, IMA
 
         controller.player = player
        
-        playerView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 400)
-        controlView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 400)
+        playerView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+        controlView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
 
         playerView.contentMode = .scaleAspectFill
         playerView.play(for: contentURL)

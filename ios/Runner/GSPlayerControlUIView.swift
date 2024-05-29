@@ -29,8 +29,6 @@ class GSPlayerControlUIView: UIView {
     @IBOutlet weak var totalDuration_Label: UILabel!
     @IBOutlet weak var fullscreen_Button : UIButton!
     @IBOutlet weak var backButton: UIButton!
-    @IBOutlet weak var volume_Slider: UISlider!
-    @IBOutlet weak var brightness_Slider: UISlider!
     
     weak var delegate: fullScreeenDelegate?
     var isFullScreen = false
@@ -57,12 +55,7 @@ class GSPlayerControlUIView: UIView {
         self.commonInit()
     }
 	
-	override func awakeFromNib() {
-        super.awakeFromNib()
-        // Set the desired tint color
-        let desiredTintColor = UIColor.white
-        backButton.tintColor = desiredTintColor
-    }
+
     
     func commonInit() {
         guard let view = Bundle(for: GSPlayerControlUIView.self).loadNibNamed("GSPlayerControlUIView", owner: self, options: nil)?.first as? UIView else { return }
