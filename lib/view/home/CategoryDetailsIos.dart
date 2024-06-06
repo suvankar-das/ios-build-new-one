@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:native_in_flutter/api/api.dart';
 import 'package:native_in_flutter/models/Movie.dart';
 import 'package:native_in_flutter/common/color_extension.dart';
 import 'package:native_in_flutter/enviorment_var.dart';
@@ -24,30 +25,57 @@ class CategoryDetailsViewIos extends StatefulWidget {
 class _CategoryDetailsViewIosState extends State<CategoryDetailsViewIos> {
   bool _isPlaying = false;
   bool _isExpanded = false;
+  String? _encodedFilePath;
+  List<String>? _cast;
+  List<String>? _director;
+  String? _description;
+  String? _title;
+  String? _imageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchContentDetails();
+  }
+
+  Future<void> _fetchContentDetails() async {
+    try {
+      final result =
+          await Api.fetchContentDetails(widget.categoryContent!.permalink!);
+      setState(() {
+        _encodedFilePath = result['media']['encoded_file_path'];
+        _cast = List<String>.from(result['casting']['cast']);
+        _director = List<String>.from(result['casting']['director']);
+        _description = result['desc'];
+        _title = result['title'];
+        _imageUrl = result['images']['img_16_9'];
+      });
+    } catch (e) {
+      print('Failed to fetch content details: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
 
-    String? description = widget.categoryContent?.description;
-    String displayDescription = (_isExpanded || description!.length <= 200)
-        ? description!
-        : description!.substring(0, 200) + '...';
+    String? description = _description;
+    String displayDescription =
+        (_isExpanded || widget.categoryContent!.description!.length <= 200)
+            ? widget.categoryContent!.description!
+            : '${widget.categoryContent!.description!.substring(0, 200)}...';
 
-    List<String> cast = widget.categoryContent?.casting?.cast ?? [];
-    List<String> director = widget.categoryContent?.casting?.director ?? [];
-    String castNames = cast.join(', ');
-    String directorNames = director.join(', ');
+    String castNames = _cast?.join(', ') ?? '';
+    String directorNames = _director?.join(', ') ?? '';
 
     return Scaffold(
       backgroundColor: ApplicationColor.bgColor,
       body: _isPlaying
           ? MoviePlayer(
-              //videoUrl:
-              //'${EnvironmentVars.bucketUrl}/${widget.categoryContent?.media?.encodedFilePath}',
-              videoUrl:
-                  'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-              videoText: widget.categoryContent!.title!,
+              // videoUrl:
+              //     'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+              videoUrl: '${EnvironmentVars.bucketUrl}/$_encodedFilePath',
+              videoText: _title!,
               videoId: widget.categoryContent!.id!,
               skipRecapStartTime: '50',
               skipRecapEndTime: '65',
@@ -68,7 +96,7 @@ class _CategoryDetailsViewIosState extends State<CategoryDetailsViewIos> {
                             width: media.width,
                             height: media.width * 0.8,
                             child: Image.network(
-                              '${EnvironmentVars.bucketUrl}/${widget.categoryContent?.images?.img16_9}',
+                              '${EnvironmentVars.bucketUrl}/$_imageUrl',
                               width: media.width,
                               height: (media.width * 9) / 16,
                               fit: BoxFit.fill,
@@ -106,7 +134,7 @@ class _CategoryDetailsViewIosState extends State<CategoryDetailsViewIos> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.categoryContent!.title ?? '',
+                              _title ?? '',
                               style: TextStyle(
                                 color: ApplicationColor.text,
                                 fontSize: 19,
@@ -123,7 +151,8 @@ class _CategoryDetailsViewIosState extends State<CategoryDetailsViewIos> {
                                 fontSize: 15,
                               ),
                             ),
-                            if (description.length > 200)
+                            if (widget.categoryContent!.description!.length >
+                                200)
                               TextButton(
                                 onPressed: () {
                                   setState(() {

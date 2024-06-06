@@ -169,4 +169,19 @@ class Api {
 
     return settingsList;
   }
+
+  static Future<Map<String, dynamic>> fetchContentDetails(
+      String permalink) async {
+    final response = await http.post(
+      Uri.parse('https://indimuse.in/api/v1/content'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'permalink': permalink}),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)['result'];
+    } else {
+      throw Exception('Failed to load content');
+    }
+  }
 }
