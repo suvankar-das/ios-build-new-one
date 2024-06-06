@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ott_code_frontend/common/color_extension.dart';
-import 'package:ott_code_frontend/models/OTTModel.dart';
+import 'package:native_in_flutter/common/color_extension.dart';
+import 'package:native_in_flutter/models/OTTModel.dart';
 import 'package:hive/hive.dart';
-import 'package:ott_code_frontend/view/main_tab/main_tab_bar_view.dart';
-import 'package:ott_code_frontend/view/login/login_view.dart';
+import 'package:native_in_flutter/view/main_tab/main_tab_bar_view.dart';
+import 'package:native_in_flutter/view/login/login_view.dart';
 
 class CompanyListWidget extends StatefulWidget {
   const CompanyListWidget({Key? key}) : super(key: key);

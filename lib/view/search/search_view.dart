@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:ott_code_frontend/common_widgets/rounded_text_field.dart';
-import 'package:ott_code_frontend/common/color_extension.dart';
-import 'package:ott_code_frontend/api/api.dart';
-import 'package:ott_code_frontend/enviorment_var.dart';
-import 'package:ott_code_frontend/models/Categories.dart';
-import 'package:ott_code_frontend/view/home/CategoryDetailsView.dart';
+import 'package:native_in_flutter/common_widgets/rounded_text_field.dart';
+import 'package:native_in_flutter/common/color_extension.dart';
+import 'package:native_in_flutter/api/api.dart';
+import 'package:native_in_flutter/enviorment_var.dart';
+import 'package:native_in_flutter/models/Categories.dart';
+import 'package:native_in_flutter/view/home/CategoryDetailsView.dart';
 
 class SearchView extends StatefulWidget {
   const SearchView({Key? key}) : super(key: key);

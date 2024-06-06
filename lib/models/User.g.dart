@@ -18,13 +18,13 @@ class UserAdapter extends TypeAdapter<User> {
     };
     return User(
       email: fields[0] as String?,
-      firstName: fields[1] as String?,
-      lastName: fields[2] as String?,
-      password: fields[3] as String?,
-      phone: fields[4] as String?,
-      accountId: fields[5] as String?,
-      lastLogin: fields[6] as String?,
-      userToken: fields[7] as String?,
+      name: fields[1] as String?,
+      password: fields[2] as String?,
+      phone: fields[3] as String?,
+      accountId: fields[4] as String?,
+      lastLogin: fields[5] as String?,
+      userToken: fields[6] as String?,
+      role: fields[7] as String?,
     );
   }
 
@@ -35,19 +35,19 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(0)
       ..write(obj.email)
       ..writeByte(1)
-      ..write(obj.firstName)
+      ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.lastName)
-      ..writeByte(3)
       ..write(obj.password)
-      ..writeByte(4)
+      ..writeByte(3)
       ..write(obj.phone)
-      ..writeByte(5)
+      ..writeByte(4)
       ..write(obj.accountId)
-      ..writeByte(6)
+      ..writeByte(5)
       ..write(obj.lastLogin)
+      ..writeByte(6)
+      ..write(obj.userToken)
       ..writeByte(7)
-      ..write(obj.userToken);
+      ..write(obj.role);
   }
 
   @override

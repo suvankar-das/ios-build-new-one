@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ott_code_frontend/common/color_extension.dart';
-import 'package:ott_code_frontend/models/Episode.dart';
-import 'package:ott_code_frontend/view/home/EpisodeDetailsView.dart'; // Import the Episode class
+import 'package:native_in_flutter/common/color_extension.dart';
+import 'package:native_in_flutter/models/Episode.dart';
+import 'package:native_in_flutter/view/home/EpisodeDetailsView.dart'; // Import the Episode class
 
 // Define a model class for WatchList movie items
 class WatchListItem {

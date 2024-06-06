@@ -1,6 +1,6 @@
-import 'package:ott_code_frontend/models/Component.dart';
-import 'package:ott_code_frontend/models/Element.dart';
-import 'package:ott_code_frontend/models/Movie.dart';
+import 'package:native_in_flutter/models/Component.dart';
+import 'package:native_in_flutter/models/Element.dart';
+import 'package:native_in_flutter/models/Movie.dart';
 
 class Settings {
   String? id;

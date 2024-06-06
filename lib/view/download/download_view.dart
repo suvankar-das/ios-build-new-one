@@ -1,6 +1,6 @@
 import 'package:fbroadcast/fbroadcast.dart';
 import 'package:flutter/material.dart';
-import 'package:ott_code_frontend/common/color_extension.dart';
+import 'package:native_in_flutter/common/color_extension.dart';
 
 class DownloadView extends StatefulWidget {
   const DownloadView({super.key});

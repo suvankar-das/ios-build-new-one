@@ -37,6 +37,18 @@ class GSPlayerControlUIView: UIView {
     // MARK: Variables
     private var videoPlayer: VideoPlayerView!
     
+    //MARK: Skip Intro and Recap
+    var skipIntroStartTime: String = ""
+    var skipIntroEndTime: String = ""
+    private var skipIntroButton: UIButton!
+    
+    var skipRecapStartTime: String = ""
+    var skipRecapEndTime: String = ""
+    private var skipRecapButton: UIButton!
+    
+    //start play from specific time
+    var startPlayFromTime = ""
+    
     // MARK: Listeners
     var onStateDidChanged: ((VideoPlayerView.State) -> Void)?
     
@@ -54,8 +66,7 @@ class GSPlayerControlUIView: UIView {
         super.prepareForInterfaceBuilder()
         self.commonInit()
     }
-	
-
+    
     
     func commonInit() {
         guard let view = Bundle(for: GSPlayerControlUIView.self).loadNibNamed("GSPlayerControlUIView", owner: self, options: nil)?.first as? UIView else { return }
@@ -66,15 +77,25 @@ class GSPlayerControlUIView: UIView {
         
         self.addSubview(view)
         
+        //skip Intro
+        createSkipIntroButton()
+        // skip recap
+        createSkipRecapButton()
     }
 }
 
 // MARK: Functions
 extension GSPlayerControlUIView {
     
-    func populate(with videoPlayer: VideoPlayerView) {
+    func populate(with videoPlayer: VideoPlayerView, skipIntroStartTime: String, skipIntroEndTime: String,skipRecapStartTime:String,skipRecapEndTime:String,
+                  startPlayFromTime:String) {
         self.videoPlayer = videoPlayer
         self.isUserInteractionEnabled = true
+        self.skipIntroStartTime = skipIntroStartTime
+        self.skipIntroEndTime = skipIntroEndTime
+        self.skipRecapStartTime = skipRecapStartTime
+        self.skipRecapEndTime = skipRecapEndTime
+        self.startPlayFromTime = startPlayFromTime
         
         setPeriodicTimer()
         setOnClicked_VideoPlayer()
@@ -90,14 +111,14 @@ extension GSPlayerControlUIView {
             if case .playing = state {
                 self.setOnStartPlaying()
             }
-                
+            
             switch state {
             case .playing, .paused: self.duration_Slider.isEnabled = true
             default: self.duration_Slider.isEnabled = false
             }
-                
+            
             self.play_Button.setImage(state == .playing ? UIImage(named: "pause_48px") : UIImage(named: "play_48px"), for: .normal)
-                
+            
             if let listener = self.onStateDidChanged { listener(state) }
         }
         
@@ -115,6 +136,18 @@ extension GSPlayerControlUIView {
         
         duration_Slider.maximumValue = Float(totalDuration)
         totalDuration_Label.text = getTimeString(seconds: Int(totalDuration))
+        
+        
+        // Start playback from a specified time or from the beginning
+        
+        /*
+               if let startTime = Int(startPlayFromTime), !startPlayFromTime.isEmpty {
+                   videoPlayer.seek(to: CMTime(seconds: Double(startTime), preferredTimescale: 60))
+               } else {
+                   videoPlayer.seek(to: CMTime(seconds: 0, preferredTimescale: 60))
+               }
+         
+         */
     }
     
     private func setPeriodicTimer() {
@@ -124,6 +157,29 @@ extension GSPlayerControlUIView {
                 let currentDuration = self!.videoPlayer.currentDuration
                 self!.currentDuration_Label.text = self!.getTimeString(seconds: Int(currentDuration))
                 self!.duration_Slider.setValue(Float(currentDuration), animated: true)
+                
+                let currentDurationInt = Int(currentDuration)                
+                //skip Intro Button show/hide
+                if let skipIntroStartTimeStr = self?.skipIntroStartTime,
+                   let skipIntroEndTimeStr = self?.skipIntroEndTime,
+                   let skipIntroStartTimeInt = Int(skipIntroStartTimeStr),
+                   let skipIntroEndTimeInt = Int(skipIntroEndTimeStr) {
+                       
+                       self?.skipIntroButton.isHidden = currentDurationInt == nil || !(currentDurationInt >= skipIntroStartTimeInt && currentDurationInt <= skipIntroEndTimeInt)
+                } else {
+                    self?.skipIntroButton.isHidden = true
+                }
+                
+                //skip Recap Button show/hide
+                if let skipRecapStartTimeStr = self?.skipRecapStartTime,
+                   let skipRecapEndTimeStr = self?.skipRecapEndTime,
+                   let skipRecapStartTimeInt = Int(skipRecapStartTimeStr),
+                   let skipRecapEndTimeInt = Int(skipRecapEndTimeStr) {
+                       
+                       self?.skipRecapButton.isHidden = currentDurationInt == nil || !(currentDurationInt >= skipRecapStartTimeInt && currentDurationInt <= skipRecapEndTimeInt)
+                } else {
+                    self?.skipRecapButton.isHidden = true
+                }            
             }
         })
     }
@@ -132,7 +188,33 @@ extension GSPlayerControlUIView {
         String(format: "%02d:%02d", seconds / 60, seconds % 60)
     }
     
-}
+    //MARK: skip button design section
+    private func createSkipIntroButton() {
+        skipIntroButton = UIButton(type: .custom)
+        skipIntroButton.setTitle("Skip Intro", for: .normal)
+        skipIntroButton.addTarget(self, action: #selector(onClicked_SkipIntro(_:)), for: .touchUpInside)
+        skipIntroButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(skipIntroButton)
+        
+        NSLayoutConstraint.activate([
+            skipIntroButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
+                skipIntroButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -80)
+        ])
+    }
+    
+    private func createSkipRecapButton() {
+        skipRecapButton = UIButton(type: .custom)
+        skipRecapButton.setTitle("Skip Recap", for: .normal)
+        skipRecapButton.addTarget(self, action: #selector(onClicked_SkipRecap(_:)), for: .touchUpInside)
+        skipRecapButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(skipRecapButton)
+        
+        NSLayoutConstraint.activate([
+            skipRecapButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
+            skipRecapButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -80)
+        ])
+    }}
+
 
 // MARK: onClicked
 extension GSPlayerControlUIView {
@@ -173,8 +255,6 @@ extension GSPlayerControlUIView {
                     appDelegate.myOrientation = .portrait
             self.fullscreen_Button.setImage(UIImage(named: "full_screen"), for: .normal)
         }
-        
-        
     }
     
 
@@ -182,6 +262,20 @@ extension GSPlayerControlUIView {
     private func setOnClicked_VideoPlayer() {
         videoPlayer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onClicked_Video(_:))))
     }
+    
+    @objc private func onClicked_SkipIntro(_ sender: UIButton) {
+        
+            if let startTime = Int(skipIntroStartTime), let endTime = Int(skipIntroEndTime) {
+                videoPlayer.seek(to: CMTime(seconds: Double(endTime), preferredTimescale: 60))
+            }
+        }
+    
+    @objc private func onClicked_SkipRecap(_ sender: UIButton) {
+        
+            if let startTime = Int(skipRecapStartTime), let endTime = Int(skipRecapEndTime) {
+                videoPlayer.seek(to: CMTime(seconds: Double(endTime), preferredTimescale: 60))
+            }
+        }
     
     @IBAction func onClicked_Video(_ sender: Any) {
         UIView.animate(withDuration: 0.2) {
@@ -204,7 +298,4 @@ extension GSPlayerControlUIView {
         videoPlayer.seek(to: CMTime(seconds: Double(sender.value), preferredTimescale: 60))
     }
 }
-
-
-
 

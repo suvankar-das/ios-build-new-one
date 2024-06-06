@@ -1,13 +1,13 @@
 import 'package:fbroadcast/fbroadcast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:ott_code_frontend/common/color_extension.dart';
-import 'package:ott_code_frontend/common_widgets/rounded_button.dart';
-import 'package:ott_code_frontend/models/Episode.dart';
-import 'package:ott_code_frontend/models/Song.dart';
-import 'package:ott_code_frontend/view/home/CategoryDetailsView.dart';
-import 'package:ott_code_frontend/view/home/EpisodeDetailsView.dart';
-import 'package:ott_code_frontend/view/home/action_buttons.dart';
+import 'package:native_in_flutter/common/color_extension.dart';
+import 'package:native_in_flutter/common_widgets/rounded_button.dart';
+import 'package:native_in_flutter/models/Episode.dart';
+import 'package:native_in_flutter/models/Song.dart';
+import 'package:native_in_flutter/view/home/CategoryDetailsView.dart';
+import 'package:native_in_flutter/view/home/EpisodeDetailsView.dart';
+import 'package:native_in_flutter/view/home/action_buttons.dart';
 
 class WebSeries extends StatefulWidget {
   const WebSeries({super.key});

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:ott_code_frontend/common/color_extension.dart';
-import 'package:ott_code_frontend/enviorment_var.dart';
-import 'package:ott_code_frontend/models/Episode.dart';
-import 'package:ott_code_frontend/view/home/action_buttons.dart';
-import 'package:ott_code_frontend/view/home/movie_player.dart';
+import 'package:native_in_flutter/common/color_extension.dart';
+import 'package:native_in_flutter/enviorment_var.dart';
+import 'package:native_in_flutter/models/Episode.dart';
+import 'package:native_in_flutter/view/home/action_buttons.dart';
+import 'package:native_in_flutter/view/home/movie_player.dart';
 import 'package:hive/hive.dart';
-import 'package:ott_code_frontend/models/User.dart';
-import 'package:ott_code_frontend/view/login/login_view.dart';
+import 'package:native_in_flutter/models/User.dart';
+import 'package:native_in_flutter/view/login/login_view.dart';
 
 class EpisodeDetailsView extends StatefulWidget {
   const EpisodeDetailsView({Key? key, required this.categoryContent})
@@ -38,6 +38,12 @@ class _EpisodeDetailsView extends State<EpisodeDetailsView> {
               videoUrl:
                   '${EnvironmentVars.bucketUrl}/${widget.categoryContent.encodedFilePath}',
               videoText: widget.categoryContent.title,
+              videoId: '',
+              skipIntroEndTime: '',
+              skipIntroStartTime: '',
+              skipRecapEndTime: '',
+              skipRecapStartTime: '',
+              startPlayFromTime: '',
             )
           : SingleChildScrollView(
               child: Stack(

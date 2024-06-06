@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ott_code_frontend/common/color_extension.dart';
+import 'package:native_in_flutter/common/color_extension.dart';
 
 class Genres extends StatefulWidget {
   const Genres({Key? key}) : super(key: key);

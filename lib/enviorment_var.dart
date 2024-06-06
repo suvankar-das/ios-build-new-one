@@ -11,5 +11,4 @@ class EnvironmentVars {
   // static const kanchaLankaUrl = 'https://newsite.kancchalannka.com/api/v1';
   static const kanchaLankaUrl = 'https://indimuse.in/api/v1';
   static const bucketUrl = 'https://d1f3hicjs3sfx1.cloudfront.net';
-  static const kancchaLannkaSiteUrl = 'https://newsite.kancchalannka.com';
 }

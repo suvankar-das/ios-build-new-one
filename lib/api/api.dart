@@ -1,41 +1,77 @@
 import 'dart:convert';
-import 'package:ott_code_frontend/enviorment_var.dart';
-import 'package:ott_code_frontend/models/Categories.dart';
+import 'package:native_in_flutter/enviorment_var.dart';
+import 'package:native_in_flutter/models/Categories.dart';
 import 'package:http/http.dart' as http;
-import 'package:ott_code_frontend/models/Movie.dart';
-import 'package:ott_code_frontend/models/OTTModel.dart';
-import 'package:ott_code_frontend/models/Settings.dart';
-import 'package:ott_code_frontend/models/Song.dart';
+import 'package:native_in_flutter/models/Movie.dart';
+import 'package:native_in_flutter/models/OTTModel.dart';
+import 'package:native_in_flutter/models/Settings.dart';
 
 class Api {
-  // static const _usersSignUpUrl = '${EnvironmentVars.apiUrl}/api/v1/user/signup';
-  // static const _usersLoginUrl = '${EnvironmentVars.apiUrl}/api/v1/user/login';
-  // static const _otpVerfifyUrl = '${EnvironmentVars.apiUrl}/api/v1/user/verify_otp';
-  // static const _categoriesUrl = '${EnvironmentVars.apiUrl}/api/v1/admin/content/category';
+  Future<http.Response> userDataOperation(Map<String, dynamic> userData,
+      String registerType, String operationType) async {
+    String apiUrl;
+    if (operationType == 'signup') {
+      apiUrl = registerType == 'phone'
+          ? '/user/signup/phone/sendotp'
+          : '/user/signup/email';
+    } else if (operationType == 'login') {
+      apiUrl = registerType == 'phone'
+          ? '/user/login/phone/sendotp'
+          : '/user/login/email';
+    } else {
+      throw ArgumentError('Invalid operationType');
+    }
 
-  Future<http.Response> registerUserData(Map<String, dynamic> userData) async {
-    final response = await http.post(
-      // Uri.parse(_usersSignUpUrl),
-      Uri.parse('${EnvironmentVars.kanchaLankaUrl}/user/signup'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(userData),
-    );
-    print("inside API response ==> $response");
-    return response;
+    String fullUrl = '${EnvironmentVars.kanchaLankaUrl}$apiUrl';
+    String requestBody = jsonEncode(userData);
+
+    print("Sending request to URL: $fullUrl");
+    print("Request payload: $requestBody");
+
+    try {
+      final response = await http.post(
+        Uri.parse(fullUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(userData),
+      );
+      print("Inside API response ==> Status code: ${response.statusCode}");
+      print("Inside API response ==> Body: ${response.body}");
+      return response;
+    } catch (e) {
+      print("Error in API call: $e");
+      rethrow; // Re-throw the error to handle it in the calling code
+    }
   }
 
-  Future<http.Response> loginUserData(Map<String, dynamic> userData) async {
-    final response = await http.post(
-      // Uri.parse(_usersLoginUrl),
-      Uri.parse('${EnvironmentVars.kanchaLankaUrl}/user/login'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(userData),
-    );
-    return response;
+  Future<http.Response> verifyOtp(
+      Map<String, dynamic> otpData, String actionType) async {
+    final String apiUrl = actionType == 'login'
+        ? '/user/login/phone/verifyotp'
+        : '/user/signup/phone/verifyotp';
+
+    String fullUrl = '${EnvironmentVars.kanchaLankaUrl}$apiUrl';
+    String requestBody = jsonEncode(otpData);
+
+    print("Sending request to URL: $fullUrl");
+    print("Request payload: $requestBody");
+
+    try {
+      final response = await http.post(
+        Uri.parse(fullUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: requestBody,
+      );
+      print("Inside API response ==> Status code: ${response.statusCode}");
+      print("Inside API response ==> Body: ${response.body}");
+      return response;
+    } catch (e) {
+      print("Error in API call: $e");
+      rethrow;
+    }
   }
 
   Future<http.Response> otpVerfify(Map<String, dynamic> otpData) async {
@@ -51,50 +87,6 @@ class Api {
   }
 
   Future<List<Categories>> getCategories({String? searchString}) async {
-    // try {
-    //   final response = await http.get(Uri.parse(_categoriesUrl));
-    //   if (response.statusCode == 200) {
-    //     final jsonData = json.decode(response.body);
-    //     final List<dynamic> categoryList = jsonData['list'];
-    //     List<Categories> categories = categoryList.map((json) {
-    //       return Categories.fromJson(json);
-    //     }).toList();
-
-    //     if (searchString != null && searchString.isNotEmpty) {
-    //       // Filter categories based on search criteria
-    //       categories = categories.where((category) {
-    //         // Check if any song title contains the searchString
-    //         return category.songs.any((song) =>
-    //             song.title.toLowerCase().contains(searchString.toLowerCase()));
-    //       }).map((category) {
-    //         // Filter songs within each category based on search criteria
-    //         final List<Song> filteredSongs = category.songs
-    //             .where((song) => song.title
-    //                 .toLowerCase()
-    //                 .contains(searchString.toLowerCase()))
-    //             .toList();
-    //         return Categories(
-    //           id: category.id,
-    //           title: category.title,
-    //           description: category.description,
-    //           type: category.type,
-    //           genre: category.genre,
-    //           portraitKey: category.portraitKey,
-    //           thumbnailKey: category.thumbnailKey,
-    //           createdAt: category.createdAt,
-    //           songs: filteredSongs,
-    //         );
-    //       }).toList();
-    //     }
-
-    //     return categories;
-    //   } else {
-    //     throw Exception('Failed to load categories');
-    //   }
-    // } catch (error) {
-    //   throw Exception('Failed to load categories: $error');
-    // }
-
     return [];
   }
 

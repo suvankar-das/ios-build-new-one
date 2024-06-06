@@ -30,8 +30,6 @@ flutter_ios_podfile_setup
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
-
-  # Add your pods here
   pod 'GoogleAds-IMA-iOS-SDK', '~> 3.14.5'
   pod 'GSPlayer'
 

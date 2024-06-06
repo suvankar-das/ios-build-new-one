@@ -1,6 +1,6 @@
-# ott_code_frontend
+# native_in_flutter
 
-A new Flutter project.
+Integrating native Android code into Flutter app
 
 ## Getting Started
 

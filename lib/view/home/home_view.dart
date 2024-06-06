@@ -1,81 +1,51 @@
-import 'package:fbroadcast/fbroadcast.dart';
 import 'package:flutter/material.dart';
-import 'package:ott_code_frontend/api/api.dart';
-import 'package:ott_code_frontend/models/Categories.dart';
-import 'package:ott_code_frontend/models/Settings.dart';
-import 'package:ott_code_frontend/view/home/Category_slider.dart';
-import 'package:ott_code_frontend/view/home/WebSeries.dart';
-import 'dart:io' show Platform;
+import 'package:native_in_flutter/models/Settings.dart';
+import 'package:native_in_flutter/view/home/Category_slider.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({Key? key}) : super(key: key);
+  final List<Settings> settings;
+
+  const HomeView({Key? key, required this.settings}) : super(key: key);
+
   @override
   State<HomeView> createState() => _HomeViewState();
 }
 
 class _HomeViewState extends State<HomeView> {
-  late Future<List<Settings>> settings;
   int selectedNavItem = 0;
-  @override
-  void initState() {
-    super.initState();
-    settings = Api().fetchSettingsAndMovies();
-  }
 
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
+    final settingsWithMovies = widget.settings
+        .where(
+            (setting) => setting.movies != null && setting.movies!.isNotEmpty)
+        .toList();
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.only(
-              top: selectedNavItem == 0
-                  ? 0
-                  : 10.0, // Remove top padding for the first item
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FutureBuilder(
-                  future: settings,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      final settingsWithMovies = snapshot.data!
-                          .where((setting) =>
-                              setting.movies != null &&
-                              setting.movies!.isNotEmpty)
-                          .toList();
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          for (int i = 0; i < settingsWithMovies.length; i++)
-                            Padding(
-                              padding: EdgeInsets.only(
-                                top: i == 0
-                                    ? 0.0
-                                    : 4, // No top padding for index 0
-                              ),
-                              child: CategorySlider(
-                                category: settingsWithMovies[i],
-                                media: media,
-                                index: i, // Pass the index to CategorySlider
-                              ),
-                            ),
-                        ],
-                      );
-                    }
-                  },
+                for (int i = 0; i < settingsWithMovies.length; i++)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: i == 0 ? 0.0 : 10.0,
+                    ),
+                    child: CategorySlider(
+                      category: settingsWithMovies[i],
+                      media: media,
+                      index: i,
+                    ),
+                  ),
+                const SizedBox(
+                  height: 10,
                 ),
-                const SizedBox(height: 10),
               ],
             ),
           ),
@@ -92,7 +62,7 @@ class _HomeViewState extends State<HomeView> {
 
   Widget buildNavBar() {
     return Container(
-      color: Colors.transparent, // Adjust color as needed
+      color: Colors.transparent,
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -112,12 +82,16 @@ class _HomeViewState extends State<HomeView> {
         setState(() {
           selectedNavItem = index;
         });
+        // Handle click event for each navigation item here
         switch (index) {
           case 0:
+            // Handle All click event
             break;
           case 1:
+            // Handle Special click event
             break;
           case 2:
+            // Handle Emotional click event
             break;
           case 3:
             // Handle Traditional click event
@@ -142,4 +116,3 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 }
-

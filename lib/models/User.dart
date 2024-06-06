@@ -7,60 +7,60 @@ class User {
   String? email;
 
   @HiveField(1)
-  String? firstName;
+  String? name;
 
   @HiveField(2)
-  String? lastName;
-
-  @HiveField(3)
   String? password;
 
-  @HiveField(4)
+  @HiveField(3)
   String? phone;
 
-  @HiveField(5)
+  @HiveField(4)
   String? accountId;
 
-  @HiveField(6)
+  @HiveField(5)
   String? lastLogin;
 
-  @HiveField(7)
+  @HiveField(6)
   String? userToken;
+
+  @HiveField(7)
+  String? role;
 
   User({
     this.email,
-    this.firstName,
-    this.lastName,
+    this.name,
     this.password,
     this.phone,
     this.accountId,
     this.lastLogin,
     this.userToken,
+    this.role,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       email: json['email'] ?? '',
-      firstName: json['first_name'] ?? '',
-      lastName: json['last_name'] ?? '',
+      name: (json['first_name'] ?? '') + ' ' + (json['last_name'] ?? ''),
       password: json['password'] ?? '',
       phone: json['phone'] ?? '',
       accountId: json['account_id'] ?? '',
       lastLogin: json['last_login'] ?? '',
       userToken: json['token'] ?? '',
+      role: json['role'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'email': email,
-      'first_name': firstName,
-      'last_name': lastName,
+      'name': name,
       'password': password,
       'phone': phone,
       'account_id': accountId,
       'last_login': lastLogin,
       'token': userToken,
+      'role': role,
     };
   }
 }

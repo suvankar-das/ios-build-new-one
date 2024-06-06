@@ -1,4 +1,4 @@
-import 'package:ott_code_frontend/models/Song.dart';
+import 'package:native_in_flutter/models/Song.dart';
 
 class Categories {
   final String id;

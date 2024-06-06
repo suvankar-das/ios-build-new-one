@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ott_code_frontend/enviorment_var.dart';
+import 'package:native_in_flutter/enviorment_var.dart';
 
 class CastsSliders extends StatelessWidget {
   const CastsSliders({Key? key, required this.media, required this.snapshot})

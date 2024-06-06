@@ -5,8 +5,23 @@ import 'package:flutter/foundation.dart';
 class MoviePlayer extends StatefulWidget {
   final String videoUrl;
   final String videoText;
+  final String videoId;
+  final String skipRecapStartTime;
+  final String skipRecapEndTime;
+  final String skipIntroStartTime;
+  final String skipIntroEndTime;
+  final String startPlayFromTime;
 
-  const MoviePlayer({Key? key, required this.videoUrl, required this.videoText})
+  const MoviePlayer(
+      {Key? key,
+      required this.videoUrl,
+      required this.videoText,
+      required this.videoId,
+      required this.skipIntroStartTime,
+      required this.skipIntroEndTime,
+      required this.skipRecapStartTime,
+      required this.skipRecapEndTime,
+      required this.startPlayFromTime})
       : super(key: key);
 
   @override
@@ -83,14 +98,19 @@ class _MoviePlayerState extends State<MoviePlayer> {
 
     return Scaffold(
       body: BmsVideoPlayer(
-        onCreated: onViewPlayerCreated,
-        x: x,
-        y: y,
-        width: width,
-        height: height,
-        videoUrl: widget.videoUrl,
-        videoText: widget.videoText,
-      ),
+          onCreated: onViewPlayerCreated,
+          x: x,
+          y: y,
+          width: width,
+          height: height,
+          videoUrl: widget.videoUrl,
+          videoText: widget.videoText,
+          videoId: widget.videoId,
+          skipIntroStartTime: widget.skipIntroStartTime,
+          skipIntroEndTime: widget.skipIntroEndTime,
+          skipRecapStartTime: widget.skipRecapStartTime,
+          skipRecapEndTime: widget.skipRecapEndTime,
+          startPlayFromTime: widget.startPlayFromTime),
     );
   }
 
@@ -122,7 +142,13 @@ class _VideoPlayerState extends State<BmsVideoPlayer> {
           "width": widget.width,
           "height": widget.height,
           "videoURL": widget.videoUrl,
-          "videoText": widget.videoText
+          "videoText": widget.videoText,
+          "videoId": widget.videoId,
+          "skipIntroStartTime": widget.skipIntroStartTime,
+          "skipIntroEndTime": widget.skipIntroEndTime,
+          "skipRecapStartTime": widget.skipRecapStartTime,
+          "skipRecapEndTime": widget.skipRecapEndTime,
+          "startPlayFromTime": widget.startPlayFromTime,
         },
         creationParamsCodec: const StandardMessageCodec(),
       );
@@ -136,7 +162,13 @@ class _VideoPlayerState extends State<BmsVideoPlayer> {
           "width": widget.width,
           "height": widget.height,
           "videoURL": widget.videoUrl,
-          "videoText": widget.videoText
+          "videoText": widget.videoText,
+          "videoId": widget.videoId,
+          "skipIntroStartTime": widget.skipIntroStartTime,
+          "skipIntroEndTime": widget.skipIntroEndTime,
+          "skipRecapStartTime": widget.skipRecapStartTime,
+          "skipRecapEndTime": widget.skipRecapEndTime,
+          "startPlayFromTime": widget.startPlayFromTime,
         },
         creationParamsCodec: const StandardMessageCodec(),
       );
@@ -182,6 +214,12 @@ class BmsVideoPlayer extends StatefulWidget {
   final height;
   final String videoUrl;
   final String videoText;
+  final String videoId;
+  final String skipIntroStartTime;
+  final String skipIntroEndTime;
+  final String skipRecapStartTime;
+  final String skipRecapEndTime;
+  final String startPlayFromTime;
 
   BmsVideoPlayer(
       {Key? key,
@@ -191,7 +229,13 @@ class BmsVideoPlayer extends StatefulWidget {
       @required this.width,
       @required this.height,
       required this.videoUrl,
-      required this.videoText});
+      required this.videoText,
+      required this.videoId,
+      required this.skipIntroStartTime,
+      required this.skipIntroEndTime,
+      required this.skipRecapStartTime,
+      required this.skipRecapEndTime,
+      required this.startPlayFromTime});
 
   @override
   State<StatefulWidget> createState() => _VideoPlayerState();

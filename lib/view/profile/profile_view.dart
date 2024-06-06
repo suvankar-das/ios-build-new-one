@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:ott_code_frontend/models/User.dart';
-import 'package:ott_code_frontend/common/color_extension.dart';
-import 'package:ott_code_frontend/view/login/login_view.dart';
+import 'package:native_in_flutter/models/User.dart';
+import 'package:native_in_flutter/common/color_extension.dart';
+import 'package:native_in_flutter/view/login/login_view.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({Key? key}) : super(key: key);
@@ -21,12 +21,21 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   void getUserFullName() async {
-    var box = await Hive.openBox<User>('userTable');
+    var box = await Hive.openBox<User>('userBox');
     var user = box.get('user');
-    var firstName = user?.firstName ?? '';
-    var lastName = user?.lastName ?? '';
+    var name = user?.name ?? '';
+    var email = user?.email ?? '';
+    var phone = user?.phone ?? '';
+    var profileName = '';
+    if (name != '' && name != ' ') {
+      profileName = '$name';
+    } else if (email != '') {
+      profileName = '$email';
+    } else if (phone != '') {
+      profileName = '$phone';
+    }
     setState(() {
-      fullName = '$firstName $lastName';
+      fullName = profileName;
     });
   }
 
@@ -76,7 +85,7 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Future<void> redirectToLogin() async {
-    var box = await Hive.openBox<User>('userTable');
+    var box = await Hive.openBox<User>('userBox');
     box.clear();
     Navigator.push(
       context,

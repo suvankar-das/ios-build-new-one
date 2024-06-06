@@ -1,10 +1,14 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:ott_code_frontend/common/color_extension.dart';
-import 'package:ott_code_frontend/enviorment_var.dart';
-import 'package:ott_code_frontend/models/Categories.dart';
-import 'package:ott_code_frontend/models/Settings.dart';
-import 'package:ott_code_frontend/view/home/CategoryDetailsView.dart';
+import 'package:flutter/services.dart';
+import 'package:native_in_flutter/common/color_extension.dart';
+import 'package:native_in_flutter/enviorment_var.dart';
+import 'package:native_in_flutter/models/Categories.dart';
+import 'package:native_in_flutter/models/Settings.dart';
+import 'package:native_in_flutter/view/home/CategoryDetailsIos.dart';
+import 'package:native_in_flutter/view/home/CategoryDetailsView.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
 
 class CategorySlider extends StatelessWidget {
   const CategorySlider({
@@ -24,8 +28,8 @@ class CategorySlider extends StatelessWidget {
     double aspectRatio = media.aspectRatio;
     bool isIndexTwo = index == 1;
 
-    double heightForIndexThree = media.height * 0.25;
-    double marginBetweenSliders = 1.0;
+    double heightForIndexThree = media.height * 0.30;
+    double marginBetweenSliders = 2.0;
 
     // Increase width for the third slider
     double widthForIndexThree = media.width * 0.6;
@@ -50,7 +54,7 @@ class CategorySlider extends StatelessWidget {
               ),
             ),
           SizedBox(
-            width: media.width,
+            width: isIndexTwo ? media.width : media.width,
             height: isIndexTwo
                 ? heightForIndexThree
                 : index == 0
@@ -58,8 +62,10 @@ class CategorySlider extends StatelessWidget {
                     : media.width * 0.3,
             child: Container(
               margin: EdgeInsets.only(
-                bottom: index == 0 ? 0 : marginBetweenSliders,
-                top: index == 0 ? 0.0 : marginBetweenSliders,
+                bottom: marginBetweenSliders,
+                top: index == 0
+                    ? 0.0
+                    : marginBetweenSliders, // Conditionally add top margin
               ),
               child: CarouselSlider.builder(
                 itemCount: category.movies?.length,
@@ -70,35 +76,113 @@ class CategorySlider extends StatelessWidget {
                     List<String> elements = permalink.split('/');
                     lastElement = elements.isNotEmpty ? elements.last : '';
                   }
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CategoryDetailsView(
-                            categoryContent: category.movies?[index],
-                          ),
+
+                  Widget itemChild;
+                  switch (index) {
+                    case 0:
+                      itemChild = ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              '${EnvironmentVars.bucketUrl}/${category.movies?[index].images?.img16_9}',
+                          fit: BoxFit.fill,
+                          width: media.width,
+                          height: (media.width * 9) / 16,
+                          placeholder: (context, url) =>
+                              const Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
                         ),
                       );
+                      break;
+                    case 1:
+                      itemChild = ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              '${EnvironmentVars.bucketUrl}/${category.movies?[index].images?.img9_16}',
+                          fit: BoxFit.fill,
+                          width: media.width / 3,
+                          height: (media.width / 3) * 16 / 9,
+                          placeholder: (context, url) =>
+                              const Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
+                      );
+                      break;
+                    case 2:
+                      itemChild = ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              '${EnvironmentVars.bucketUrl}/${category.movies?[index].images?.img16_9}',
+                          fit: BoxFit.fill,
+                          width: (media.width) / 1.5,
+                          height: (((media.width) / 1.5) * 9) / 16,
+                          placeholder: (context, url) =>
+                              const Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        ),
+                      );
+                      break;
+                    case 3:
+                      itemChild = ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              '${EnvironmentVars.bucketUrl}/${category.movies?[index].images?.img1_1}',
+                          fit: BoxFit.fill,
+                          width: (media.width) / 2,
+                          height: (media.width) / 2,
+                          placeholder: (context, url) =>
+                              const Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
+                      );
+                      break;
+                    default:
+                      itemChild = ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              '${EnvironmentVars.bucketUrl}/${category.movies?[index].images?.img16_9}',
+                          fit: BoxFit.fill,
+                          width: (media.width) / 1.5,
+                          height: (((media.width) / 1.5) * 9) / 16,
+                          placeholder: (context, url) =>
+                              const Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
+                      );
+                  }
+
+                  return GestureDetector(
+                    onTap: () {
+                      if (Platform.isIOS) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CategoryDetailsViewIos(
+                              categoryContent: category.movies?[index],
+                            ),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CategoryDetailsView(
+                              categoryContent: category.movies?[index],
+                            ),
+                          ),
+                        );
+                      }
                     },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        '${EnvironmentVars.bucketUrl}/${category.movies?[index].images?.img16_9}',
-                        fit: isIndexTwo
-                            ? BoxFit.cover
-                            : aspectRatio > 1
-                                ? BoxFit.fitHeight
-                                : BoxFit.fitWidth,
-                        width: index == 2 ? widthForIndexThree : media.width,
-                        height: isIndexTwo
-                            ? heightForIndexThree
-                            : index == 0
-                                ? media.height * firstCarouselHeight
-                                : media.width * 0.8,
-                        filterQuality: FilterQuality.low,
-                      ),
-                    ),
+                    child: itemChild,
                   );
                 },
                 options: CarouselOptions(
@@ -123,4 +207,3 @@ class CategorySlider extends StatelessWidget {
     );
   }
 }
-

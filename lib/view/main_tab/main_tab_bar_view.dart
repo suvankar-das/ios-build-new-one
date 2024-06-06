@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:fbroadcast/fbroadcast.dart';
-import 'package:ott_code_frontend/common/color_extension.dart';
-import 'package:ott_code_frontend/view/download/download_view.dart';
-import 'package:ott_code_frontend/view/home/WatchListView.dart';
-import 'package:ott_code_frontend/view/home/home_view.dart';
-import 'package:ott_code_frontend/view/profile/profile_view.dart';
-import 'package:ott_code_frontend/view/search/search_view.dart';
+import 'package:native_in_flutter/common/color_extension.dart';
+import 'package:native_in_flutter/view/download/download_view.dart';
+import 'package:native_in_flutter/view/home/WatchListView.dart';
+import 'package:native_in_flutter/view/home/home_view.dart';
+import 'package:native_in_flutter/view/profile/profile_view.dart';
+import 'package:native_in_flutter/view/search/search_view.dart';
+import 'package:native_in_flutter/models/Settings.dart';
 
 class MainTabBarView extends StatefulWidget {
-  const MainTabBarView({Key? key}) : super(key: key);
+  final List<Settings> settings;
+
+  const MainTabBarView({Key? key, required this.settings}) : super(key: key);
 
   @override
   State<MainTabBarView> createState() => _MainTabBarViewState();
@@ -43,12 +46,12 @@ class _MainTabBarViewState extends State<MainTabBarView>
     return Scaffold(
       body: TabBarView(
         controller: tabController,
-        children: const [
-          HomeView(),
-          SearchView(),
-          DownloadView(),
-          ProfileView(),
-          WatchListView(),
+        children: [
+          HomeView(settings: widget.settings),
+          const SearchView(),
+          const DownloadView(),
+          const ProfileView(),
+          const WatchListView(),
         ],
       ),
       backgroundColor: ApplicationColor.bgColor,
@@ -88,7 +91,6 @@ class _MainTabBarViewState extends State<MainTabBarView>
             unselectedLabelColor: ApplicationColor.subText,
             labelColor: ApplicationColor.primaryColor,
             controller: tabController,
-            // Adjust the padding here to decrease the margin between tabs
             labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
             indicatorPadding: EdgeInsets.symmetric(horizontal: 8.0),
             tabs: const [

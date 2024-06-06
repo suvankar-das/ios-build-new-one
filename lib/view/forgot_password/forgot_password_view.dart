@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ott_code_frontend/common/color_extension.dart';
-import 'package:ott_code_frontend/common_widgets/rounded_button.dart';
-import 'package:ott_code_frontend/common_widgets/rounded_text_field.dart';
+import 'package:native_in_flutter/common/color_extension.dart';
+import 'package:native_in_flutter/common_widgets/rounded_button.dart';
+import 'package:native_in_flutter/common_widgets/rounded_text_field.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});

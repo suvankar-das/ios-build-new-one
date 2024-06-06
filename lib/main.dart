@@ -1,12 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:ott_code_frontend/models/OTTModel.dart';
-import 'package:ott_code_frontend/models/User.dart';
-import 'package:ott_code_frontend/view/home/company_list_widget.dart';
-import 'package:ott_code_frontend/view/login/login_view.dart';
+import 'package:native_in_flutter/models/OTTModel.dart';
+import 'package:native_in_flutter/models/User.dart';
+import 'package:native_in_flutter/splashScreen.dart';
+import 'package:native_in_flutter/view/home/company_list_widget.dart';
+import 'package:native_in_flutter/view/login/login_view.dart';
 import 'package:hive/hive.dart';
-import 'package:ott_code_frontend/view/main_tab/main_tab_bar_view.dart';
+import 'package:native_in_flutter/view/main_tab/main_tab_bar_view.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 
@@ -71,7 +72,7 @@ class _MyAppState extends State<MyApp> {
         fontFamily: "Gotham",
         useMaterial3: true,
       ),
-      home: const MainTabBarView(),
+      home: const SplashScreen(),
     );
   }
 }
