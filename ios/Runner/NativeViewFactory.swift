@@ -331,7 +331,7 @@ public class NativeView : NSObject, FlutterPlatformView, fullScreeenDelegate, IM
 
     @objc func touchedSet(sender: UIButton!) {
         print("You tapped the button")
-        //requestAds(view: _view)
+        requestAds(view: _view)
         settings.isHidden = true
         controlView.onClicked_FullScreen(self)
     }
